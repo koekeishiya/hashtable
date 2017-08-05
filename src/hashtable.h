@@ -6,7 +6,7 @@ typedef int (*table_compare_func)(void *key_a, void *key_b);
 
 struct bucket
 {
-    char *key;
+    void *key;
     void *value;
     struct bucket *next;
 };
@@ -22,9 +22,9 @@ struct table
 void table_init(struct table *table, int capacity, table_hash_func hash, table_compare_func compare);
 void table_free(struct table *table);
 
-void *table_find(struct table *table, char *key);
-void table_insert(struct table *table, char *key, void *value);
-void *table_remove(struct table *table, char *key);
+void *table_find(struct table *table, void *key);
+void table_insert(struct table *table, void *key, void *value);
+void *table_remove(struct table *table, void *key);
 
 #endif
 
@@ -33,7 +33,7 @@ void *table_remove(struct table *table, char *key);
 #include <string.h>
 
 static struct bucket *
-table_new_bucket(char *key, void *value)
+table_new_bucket(void *key, void *value)
 {
     struct bucket *bucket = malloc(sizeof(struct bucket));
     bucket->key = key;
@@ -43,7 +43,7 @@ table_new_bucket(char *key, void *value)
 }
 
 static struct bucket **
-table_get_bucket(struct table *table, char *key)
+table_get_bucket(struct table *table, void *key)
 {
     struct bucket **bucket = table->buckets + (table->hash(key) % table->capacity);
     while(*bucket) {
@@ -78,13 +78,13 @@ void table_free(struct table *table)
     free(table->buckets);
 }
 
-void *table_find(struct table *table, char *key)
+void *table_find(struct table *table, void *key)
 {
     struct bucket *bucket = *table_get_bucket(table, key);
     return bucket ? bucket->value : NULL;
 }
 
-void table_insert(struct table *table, char *key, void *value)
+void table_insert(struct table *table, void *key, void *value)
 {
     struct bucket **bucket = table_get_bucket(table, key);
     if(*bucket) {
@@ -95,7 +95,7 @@ void table_insert(struct table *table, char *key, void *value)
     }
 }
 
-void *table_remove(struct table *table, char *key)
+void *table_remove(struct table *table, void *key)
 {
     void *result = NULL;
     struct bucket *next, **bucket = table_get_bucket(table, key);
