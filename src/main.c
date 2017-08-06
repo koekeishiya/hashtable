@@ -55,9 +55,9 @@ int main()
     struct table table;
     table_init(&table, 128, hash_string, compare_string);
 
-    table_insert(&table, copy_string("key1"), 5);
-    table_insert(&table, copy_string("key2"), 6);
-    table_insert(&table, copy_string("key3"), 7);
+    table_add(&table, copy_string("key1"), 5);
+    table_add(&table, copy_string("key2"), 6);
+    table_add(&table, copy_string("key3"), 7);
 
     value = table_find(&table, "key1");
     if(value) {

@@ -23,7 +23,7 @@ void table_init(struct table *table, int capacity, table_hash_func hash, table_c
 void table_free(struct table *table);
 
 void *table_find(struct table *table, void *key);
-void table_insert(struct table *table, void *key, void *value);
+void table_add(struct table *table, void *key, void *value);
 void *table_remove(struct table *table, void *key);
 
 #endif
@@ -84,7 +84,7 @@ void *table_find(struct table *table, void *key)
     return bucket ? bucket->value : NULL;
 }
 
-void table_insert(struct table *table, void *key, void *value)
+void table_add(struct table *table, void *key, void *value)
 {
     struct bucket **bucket = table_get_bucket(table, key);
     if(*bucket) {
