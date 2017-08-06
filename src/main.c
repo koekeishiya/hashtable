@@ -1,27 +1,7 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #define HASHTABLE_IMPLEMENTATION
 #include "hashtable.h"
-
-int count_string(const char *s)
-{
-    int count = 0;
-    while(s && *s) {
-        ++count;
-        ++s;
-    }
-    return count;
-}
-
-char *copy_string(const char *s)
-{
-    int s_len = count_string(s);
-    char *result = malloc(s_len + 1);
-    memcpy(result, s, s_len);
-    result[s_len] = '\0';
-    return result;
-}
 
 int compare_string(const char *a, const char *b)
 {
@@ -51,37 +31,33 @@ unsigned long hash_string(char *key)
 
 int main()
 {
-    void *value;
     struct table table;
-    table_init(&table, 128, hash_string, compare_string);
+    int *value;
 
-    table_add(&table, copy_string("key1"), 5);
-    table_add(&table, copy_string("key2"), 6);
-    table_add(&table, copy_string("key3"), 7);
+    const char *keys[] =  { "key1", "key2", "key3" };
+    int values[3] = { 5, 6, 7 };
 
-    value = table_find(&table, "key1");
-    if(value) {
-        printf("value: %d\n", (int)value);
+    table_init(&table, 128, (table_hash_func)hash_string, (table_compare_func)compare_string);
+
+    for(int i = 0; i < 3; ++i) {
+        table_add(&table, (void*)keys[i], (void*)&values[i]);
     }
 
-    value = table_find(&table, "key2");
-    if(value) {
-        printf("value: %d\n", (int)value);
+    for(int i = 0; i < 3; ++i) {
+        value = table_find(&table, (void*)keys[i]);
+        printf("key '%s' -> %d\n", keys[i], *value);
     }
 
-    value = table_find(&table, "key3");
-    if(value) {
-        printf("value: %d\n", (int)value);
-    }
+    table_remove(&table, "key1");
+    table_remove(&table, "key2");
 
-    value = table_remove(&table, "key1");
-    if(value) {
-        printf("value: %d\n", (int)value);
-    }
-
-    value = table_find(&table, "key1");
-    if(value) {
-        printf("value: %d\n", (int)value);
+    for(int i = 0; i < 3; ++i) {
+        value = table_find(&table, (void*)keys[i]);
+        if(value) {
+            printf("key '%s' -> %d\n", keys[i], *value);
+        } else {
+            printf("key '%s' -> <not found>\n", keys[i]);
+        }
     }
 
     table_free(&table);
