@@ -25,6 +25,7 @@ void table_free(struct table *table);
 void *table_find(struct table *table, void *key);
 void table_add(struct table *table, void *key, void *value);
 void *table_remove(struct table *table, void *key);
+void *table_reset(struct table *table, int *count);
 
 #endif
 
@@ -47,7 +48,7 @@ table_get_bucket(struct table *table, void *key)
 {
     struct bucket **bucket = table->buckets + (table->hash(key) % table->capacity);
     while(*bucket) {
-        if(table->compare(key, (*bucket)->key)) {
+        if(table->compare((*bucket)->key, key)) {
             break;
         }
         bucket = &(*bucket)->next;
@@ -109,4 +110,31 @@ void *table_remove(struct table *table, void *key)
     return result;
 }
 
+void *table_reset(struct table *table, int *count)
+{
+    void **values;
+    int capacity;
+    int index;
+    int item;
+
+    capacity = table->capacity;
+    *count = table->count;
+    values = malloc(sizeof(void *) * table->count);
+    item = 0;
+
+    for(index = 0; index < capacity; ++index) {
+        struct bucket *next, **bucket = table->buckets + index;
+        while(*bucket) {
+            values[item++] = (*bucket)->value;
+            next = (*bucket)->next;
+            free(*bucket);
+            *bucket = next;
+            --table->count;
+        }
+    }
+
+    return values;
+}
+
+#undef HASHTABLE_IMPLEMENTATION
 #endif
