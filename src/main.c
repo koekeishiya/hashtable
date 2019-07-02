@@ -28,7 +28,7 @@ static TABLE_COMPARE_FUNC(compare_string)
     char *a = key_a;
     char *b = key_b;
 
-    while(*a && *b && *a == *b) {
+    while (*a && *b && *a == *b) {
         ++a;
         ++b;
     }
@@ -51,11 +51,11 @@ int main()
 
     table_init(&table, 128, hash_string, compare_string);
 
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         table_add(&table, &keys[i], &values[i]);
     }
 
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         value = table_find(&table, &keys[i]);
         printf("key '%s' -> %f, %f\n", keys[i], value->x, value->y);
     }
@@ -63,9 +63,9 @@ int main()
     table_remove(&table, &keys[0]);
     table_remove(&table, &keys[1]);
 
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         value = table_find(&table, &keys[i]);
-        if(value) {
+        if (value) {
             printf("key '%s' -> %f, %f\n", keys[i], value->x, value->y);
         } else {
             printf("key '%s' -> <not found>\n", keys[i]);
